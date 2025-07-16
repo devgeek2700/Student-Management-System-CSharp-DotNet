@@ -1,0 +1,62 @@
+﻿@model List<Student_Management_System.Models.Teacher>
+
+@{
+    ViewData["Title"] = "Teachers";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Teachers</h2>
+        <a class="btn btn-primary" asp-controller="Teacher" asp-action="Create">Create New</a>
+    </div>
+
+    <!-- 🔍 Search Bar -->
+    <form asp-controller="Teacher" asp-action="Search" method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="query" class="form-control" placeholder="Search by name, department, or course..." />
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </div>
+    </form>
+
+
+    <!-- 👨‍🏫 Teachers Table -->
+    <table class="table table-bordered table-striped">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Subject</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var teacher in Model)
+                {
+                    <tr>
+                        <td>@teacher.TeacherID</td>
+                        <td>@teacher.FirstName @teacher.LastName</td>
+                        <td>@teacher.Gender</td>
+                        <td>@teacher.Email</td>
+                        <td>@teacher.Phone</td>
+                        <td>@teacher.SubjectTeacher</td>
+                        <td>
+                            <a class="btn btn-sm btn-warning" asp-controller="Teacher" asp-action="Edit" asp-route-id="@teacher.TeacherID">Edit</a>
+                            <a class="btn btn-sm btn-danger" asp-controller="Teacher" asp-action="Delete" asp-route-id="@teacher.TeacherID">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="8" class="text-center text-muted">No teachers found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

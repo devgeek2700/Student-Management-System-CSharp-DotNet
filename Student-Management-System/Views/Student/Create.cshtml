@@ -1,0 +1,59 @@
+﻿@model Student_Management_System.Models.Student
+@{
+    ViewData["Title"] = "Create Student";
+}
+
+<h2>Create New Student</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="FirstName"></label>
+        <input asp-for="FirstName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LastName"></label>
+        <input asp-for="LastName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" type="email" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Gender"></label>
+        <select asp-for="Gender" class="form-control">
+            <option>Male</option>
+            <option>Female</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DOB"></label>
+        <input asp-for="DOB" class="form-control" type="date" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Phone"></label>
+        <input asp-for="Phone" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Address"></label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DepartmentID"></label>
+        <input asp-for="DepartmentID" class="form-control" type="number" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EnrollmentDate"></label>
+        <input asp-for="EnrollmentDate" class="form-control" type="date" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
