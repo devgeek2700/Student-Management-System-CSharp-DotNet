@@ -1,4 +1,5 @@
-﻿@model Student_Management_System.Models.Student
+﻿@model Student_Management_System.Models.StudentViewModel;
+
 @{
     ViewData["Title"] = "Edit Student";
 }
@@ -6,54 +7,76 @@
 <h2>Edit Student</h2>
 
 <form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="StudentID" />
+    <input type="hidden" asp-for="Student.StudentID" />
 
     <div class="form-group">
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control" />
+        <label asp-for="Student.FirstName"></label>
+        <input asp-for="Student.FirstName" class="form-control" />
     </div>
 
     <div class="form-group">
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control" />
+        <label asp-for="Student.LastName"></label>
+        <input asp-for="Student.LastName" class="form-control" />
     </div>
 
     <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
+        <label asp-for="Student.Email"></label>
+        <input asp-for="Student.Email" class="form-control" />
     </div>
 
     <div class="form-group">
-        <label asp-for="Gender"></label>
-        <select asp-for="Gender" class="form-control">
+        <label asp-for="Student.Gender"></label>
+        <select asp-for="Student.Gender" class="form-control">
             <option>Male</option>
             <option>Female</option>
         </select>
     </div>
 
     <div class="form-group">
-        <label asp-for="DOB"></label>
-        <input asp-for="DOB" class="form-control" type="date" />
+        <label asp-for="Student.DOB"></label>
+        <input asp-for="Student.DOB" class="form-control"
+               type="date"
+               min="1980-01-01"
+               max="9999-12-31"
+               value="@Model.Student.DOB.ToString("yyyy-MM-dd")"
+               required />
+    </div>
+
+   
+
+    <div class="form-group">
+        <label asp-for="Student.Phone"></label>
+        <input asp-for="Student.Phone" class="form-control" />
     </div>
 
     <div class="form-group">
-        <label asp-for="Phone"></label>
-        <input asp-for="Phone" class="form-control" />
+        <label asp-for="Student.Address"></label>
+        <input asp-for="Student.Address" class="form-control" />
+    </div>
+
+    <select asp-for="Student.DepartmentID"
+            asp-items="@(new SelectList(Model.AllDepartments, "DepartmentID", "DepartmentName"))"
+            class="form-control">
+        <option value="">-- Select Department --</option>
+    </select>
+
+
+    <div class="form-group">
+        <label>Courses</label>
+        <select asp-for="SelectedCourseIds"
+                asp-items="@(new MultiSelectList(Model.AllCourses, "CourseID", "CourseName", Model.SelectedCourseIds))"
+                class="form-control" multiple>
+        </select>
     </div>
 
     <div class="form-group">
-        <label asp-for="Address"></label>
-        <input asp-for="Address" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="DepartmentID"></label>
-        <input asp-for="DepartmentID" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="EnrollmentDate"></label>
-        <input asp-for="EnrollmentDate" class="form-control" type="date" />
+        <label asp-for="Student.EnrollmentDate"></label>
+        <input asp-for="Student.EnrollmentDate" class="form-control"
+               type="date"
+               min="1980-01-01"
+               max="9999-12-31"
+               value="@Model.Student.EnrollmentDate.ToString("yyyy-MM-dd")"
+               required />
     </div>
 
     <button type="submit" class="btn btn-primary">Update</button>

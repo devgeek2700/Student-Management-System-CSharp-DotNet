@@ -15,16 +15,15 @@ namespace Student_Management_System.DB_CONNECT
         }
 
         // CREATE: Add a new student
-        public void AddStudent(Student student)
+        public int AddStudent(Student student)
         {
             using SqlConnection connection = new SqlConnection(_connectionString);
             using SqlCommand command = new SqlCommand(@"
         INSERT INTO Students 
         (FirstName, LastName, Email, Gender, DOB, Phone, Address, DepartmentID, EnrollmentDate) 
+        OUTPUT INSERTED.StudentID
         VALUES 
         (@FirstName, @LastName, @Email, @Gender, @DOB, @Phone, @Address, @DepartmentID, @EnrollmentDate)", connection);
-
-            command.CommandType = CommandType.Text;
 
             command.Parameters.AddWithValue("@FirstName", student.FirstName);
             command.Parameters.AddWithValue("@LastName", student.LastName);
@@ -37,8 +36,9 @@ namespace Student_Management_System.DB_CONNECT
             command.Parameters.AddWithValue("@EnrollmentDate", student.EnrollmentDate);
 
             connection.Open();
-            command.ExecuteNonQuery();
+            return (int)command.ExecuteScalar(); // returns the new StudentID
         }
+
 
 
         // READ: Get all students from the database
@@ -50,7 +50,9 @@ namespace Student_Management_System.DB_CONNECT
             {
                 using (SqlCommand command = new SqlCommand("SELECT * FROM Students", connection))
                 {
+                    command.CommandTimeout = 120;
                     command.CommandType = CommandType.Text;
+
                     connection.Open();
 
                     using (SqlDataReader reader = command.ExecuteReader())
@@ -189,7 +191,117 @@ namespace Student_Management_System.DB_CONNECT
 
 
 
+        // READ: Get all courses from the Courses table
+        public List<Course> GetAllCourses()
+        {
+            List<Course> courses = new List<Course>();
 
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT * FROM Courses";
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        courses.Add(new Course
+                        {
+                            CourseID = Convert.ToInt32(reader["CourseID"]),
+                            CourseName = reader["CourseName"].ToString() ?? string.Empty
+                        });
+                    }
+                }
+            }
+
+            return courses;
+        }
+
+
+        public List<Department> GetAllDepartments()
+        {
+            List<Department> departments = new List<Department>();
+
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            using SqlCommand command = new SqlCommand("SELECT * FROM Departments", connection);
+            connection.Open();
+
+            using SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                departments.Add(new Department
+                {
+                    DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                    DepartmentName = reader["DepartmentName"].ToString() ?? string.Empty
+                });
+            }
+
+            return departments;
+        }
+
+
+        public List<StudentCourse> GetAllStudentCourses()
+        {
+            var list = new List<StudentCourse>();
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            using SqlCommand command = new SqlCommand("SELECT * FROM StudentCourses", connection);
+            connection.Open();
+
+            using SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new StudentCourse
+                {
+                    StudentID = Convert.ToInt32(reader["StudentID"]),
+                    CourseID = Convert.ToInt32(reader["CourseID"])
+                });
+            }
+
+            return list;
+        }
+
+        // In DbConnection.cs
+        public void AddStudentCourses(int studentId, List<int> courseIds)
+        {
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            foreach (var courseId in courseIds)
+            {
+                using SqlCommand command = new SqlCommand(
+                    "INSERT INTO StudentCourses (StudentID, CourseID) VALUES (@StudentID, @CourseID)", connection);
+                command.Parameters.AddWithValue("@StudentID", studentId);
+                command.Parameters.AddWithValue("@CourseID", courseId);
+                command.ExecuteNonQuery();
+            }
+        }
+
+
+
+        public void UpdateStudentCourses(int studentId, List<int> courseIds)
+        {
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            // Delete old mappings
+            using (SqlCommand deleteCommand = new SqlCommand(
+                "DELETE FROM StudentCourses WHERE StudentID = @StudentID", connection))
+            {
+                deleteCommand.Parameters.AddWithValue("@StudentID", studentId);
+                deleteCommand.ExecuteNonQuery();
+            }
+
+            // Insert new mappings
+            foreach (var courseId in courseIds)
+            {
+                using SqlCommand insertCommand = new SqlCommand(
+                    "INSERT INTO StudentCourses (StudentID, CourseID) VALUES (@StudentID, @CourseID)", connection);
+                insertCommand.Parameters.AddWithValue("@StudentID", studentId);
+                insertCommand.Parameters.AddWithValue("@CourseID", courseId);
+                insertCommand.ExecuteNonQuery();
+            }
+        }
 
 
 

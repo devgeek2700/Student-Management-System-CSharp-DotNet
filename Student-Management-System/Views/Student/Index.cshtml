@@ -1,4 +1,4 @@
-﻿@model List<Student_Management_System.Models.Student>
+﻿@model List<Student_Management_System.Models.StudentListViewModel>
 @{
     ViewData["Title"] = "Students";
 }
@@ -31,7 +31,8 @@
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Address</th>
-                <th>Department ID</th>
+                <th>Department</th>
+                <th>Courses Taken</th
                 <th>Enrollment Date</th>
                 <th>Actions</th>
             </tr>
@@ -51,7 +52,8 @@
                         <td>@student.Email</td>
                         <td>@student.Phone</td>
                         <td>@student.Address</td>
-                        <td>@student.DepartmentID</td>
+                      <td>@student.DepartmentName</td>
+<td>@string.Join(", ", student.CoursesTaken)</td>
                         <td>@student.EnrollmentDate.ToShortDateString()</td>
                         <td>
                             <a class="btn btn-sm btn-warning" asp-controller="Student" asp-action="Edit" asp-route-id="@student.StudentID">Edit</a>
