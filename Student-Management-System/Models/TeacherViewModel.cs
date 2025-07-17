@@ -1,13 +1,17 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
-
-using Student_Management_System.Models;
-
-public class TeacherViewModel
+namespace Student_Management_System.Models
 {
-    public Teacher Teacher { get; set; }
-    public List<int> SelectedCourseIds { get; set; }
-    public List<Course> AllCourses { get; set; }
+    public class TeacherViewModel
+    {
+        public Teacher Teacher { get; set; } = new();
+        public List<Course> AllCourses { get; set; } = new();
+        public List<Department> AllDepartments { get; set; } = new();
+        public List<int> SelectedCourseIds { get; set; } = new();
+
+
+    }
 }

@@ -179,5 +179,137 @@ namespace Student_Management_System.DB_CONNECT
             return result;
         }
 
+
+
+        // Get all courses assigned to a teacher
+        public List<int> GetCoursesByTeacherId(int teacherId)
+        {
+            var courseIds = new List<int>();
+
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            using SqlCommand command = new SqlCommand(
+                "SELECT CourseID FROM TeacherCourses WHERE TeacherID = @TeacherID", connection);
+            command.Parameters.AddWithValue("@TeacherID", teacherId);
+
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                courseIds.Add(Convert.ToInt32(reader["CourseID"]));
+            }
+
+            return courseIds;
+        }
+
+        // Assign multiple courses to a teacher
+        public void AssignCoursesToTeacher(int teacherId, List<int> courseIds)
+        {
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            foreach (int courseId in courseIds)
+            {
+                using SqlCommand command = new SqlCommand(
+                    "INSERT INTO TeacherCourses (TeacherID, CourseID) VALUES (@TeacherID, @CourseID)", connection);
+                command.Parameters.AddWithValue("@TeacherID", teacherId);
+                command.Parameters.AddWithValue("@CourseID", courseId);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        // Update courses assigned to a teacher
+        public void UpdateTeacherCourses(int teacherId, List<int> courseIds)
+        {
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            // Delete old mappings
+            using (SqlCommand deleteCommand = new SqlCommand(
+                "DELETE FROM TeacherCourses WHERE TeacherID = @TeacherID", connection))
+            {
+                deleteCommand.Parameters.AddWithValue("@TeacherID", teacherId);
+                deleteCommand.ExecuteNonQuery();
+            }
+
+            // Insert new mappings
+            foreach (var courseId in courseIds)
+            {
+                using SqlCommand insertCommand = new SqlCommand(
+                    "INSERT INTO TeacherCourses (TeacherID, CourseID) VALUES (@TeacherID, @CourseID)", connection);
+                insertCommand.Parameters.AddWithValue("@TeacherID", teacherId);
+                insertCommand.Parameters.AddWithValue("@CourseID", courseId);
+                insertCommand.ExecuteNonQuery();
+            }
+        }
+
+        // Get all teacher-course mappings (optional for listing/report)
+        public List<TeacherCourse> GetAllTeacherCourses()
+        {
+            List<TeacherCourse> mappings = new();
+
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            using SqlCommand command = new SqlCommand("SELECT * FROM TeacherCourses", connection);
+            connection.Open();
+
+            using SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                mappings.Add(new TeacherCourse
+                {
+                    TeacherID = Convert.ToInt32(reader["TeacherID"]),
+                    CourseID = Convert.ToInt32(reader["CourseID"])
+                });
+            }
+
+            return mappings;
+        }
+
+
+        // Get all courses
+        public List<Course> GetAllCourses()
+        {
+            List<Course> courses = new();
+
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            using SqlCommand command = new SqlCommand("SELECT * FROM Courses", connection);
+            connection.Open();
+
+            using SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                courses.Add(new Course
+                {
+                    CourseID = Convert.ToInt32(reader["CourseID"]),
+                    CourseName = reader["CourseName"].ToString() ?? ""
+                });
+            }
+
+            return courses;
+        }
+
+        // Get all departments
+        public List<Department> GetAllDepartments()
+        {
+            List<Department> departments = new();
+
+            using SqlConnection connection = new SqlConnection(_connectionString);
+            using SqlCommand command = new SqlCommand("SELECT * FROM Departments", connection);
+            connection.Open();
+
+            using SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                departments.Add(new Department
+                {
+                    DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                    DepartmentName = reader["DepartmentName"].ToString() ?? ""
+                });
+            }
+
+            return departments;
+        }
+
+
+
     }
 }

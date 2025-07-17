@@ -1,4 +1,10 @@
-﻿namespace Student_Management_System.Models
+﻿using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+
+
+namespace Student_Management_System.Models
 {
     public class StudentListViewModel
     {

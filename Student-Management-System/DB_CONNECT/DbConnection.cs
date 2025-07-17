@@ -50,7 +50,7 @@ namespace Student_Management_System.DB_CONNECT
             {
                 using (SqlCommand command = new SqlCommand("SELECT * FROM Students", connection))
                 {
-                    command.CommandTimeout = 120;
+                    command.CommandTimeout = 180;
                     command.CommandType = CommandType.Text;
 
                     connection.Open();

@@ -54,11 +54,14 @@
         <input asp-for="Student.Address" class="form-control" />
     </div>
 
+    <div class="form-group">
+        <label>Department</label>
     <select asp-for="Student.DepartmentID"
             asp-items="@(new SelectList(Model.AllDepartments, "DepartmentID", "DepartmentName"))"
             class="form-control">
         <option value="">-- Select Department --</option>
     </select>
+    </div>
 
 
     <div class="form-group">
