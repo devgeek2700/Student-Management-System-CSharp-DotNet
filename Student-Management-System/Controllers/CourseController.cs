@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Student_Management_System.Models;
 using Student_Management_System.DB_CONNECT;
+using System;
 
 namespace Student_Management_System.Controllers
 {
@@ -16,24 +17,49 @@ namespace Student_Management_System.Controllers
         // GET: /Course
         public IActionResult Index()
         {
-            var courses = _db.GetAllCourses();
-            return View(courses);
+            try
+            {
+                var courses = _db.GetAllCourses();
+                return View(courses);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in Index: " + ex.Message);
+                return View("Error");
+            }
         }
 
         // GET: /Course/Details/5
         public IActionResult Details(int id)
         {
-            var course = _db.GetCourseById(id);
-            if (course == null)
-                return NotFound();
+            try
+            {
+                var course = _db.GetCourseById(id);
+                if (course == null)
+                    return NotFound();
 
-            return View(course);
+                return View(course);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in Details: " + ex.Message);
+                return View("Error");
+            }
         }
 
         // GET: /Course/Create
         public IActionResult Create()
         {
-            return View();
+            try
+            {
+                ViewBag.Departments = _db.GetAllDepartments();
+                return View();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in Create GET: " + ex.Message);
+                return View("Error");
+            }
         }
 
         // POST: /Course/Create
@@ -41,22 +67,41 @@ namespace Student_Management_System.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Course course)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _db.AddCourse(course);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _db.AddCourse(course);
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Departments = _db.GetAllDepartments();
+                return View(course);
             }
-            return View(course);
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in Create POST: " + ex.Message);
+                return View("Error");
+            }
         }
 
         // GET: /Course/Edit/5
         public IActionResult Edit(int id)
         {
-            var course = _db.GetCourseById(id);
-            if (course == null)
-                return NotFound();
+            try
+            {
+                var course = _db.GetCourseById(id);
+                if (course == null)
+                    return NotFound();
 
-            return View(course);
+                ViewBag.Departments = _db.GetAllDepartments();
+                return View(course);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in Edit GET: " + ex.Message);
+                return View("Error");
+            }
         }
 
         // POST: /Course/Edit/5
@@ -64,24 +109,42 @@ namespace Student_Management_System.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Course course)
         {
-            Console.WriteLine($"Updating Course ID: {course.CourseID}");
-
-            if (ModelState.IsValid)
+            try
             {
-                _db.UpdateCourse(course);
-                return RedirectToAction(nameof(Index));
+                Console.WriteLine($"Updating Course ID: {course.CourseID}");
+
+                if (ModelState.IsValid)
+                {
+                    _db.UpdateCourse(course);
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Departments = _db.GetAllDepartments();
+                return View(course);
             }
-            return View(course);
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in Edit POST: " + ex.Message);
+                return View("Error");
+            }
         }
 
         // GET: /Course/Delete/5
         public IActionResult Delete(int id)
         {
-            var course = _db.GetCourseById(id);
-            if (course == null)
-                return NotFound();
+            try
+            {
+                var course = _db.GetCourseById(id);
+                if (course == null)
+                    return NotFound();
 
-            return View(course);
+                return View(course);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in Delete GET: " + ex.Message);
+                return View("Error");
+            }
         }
 
         // POST: /Course/Delete/5
@@ -89,29 +152,52 @@ namespace Student_Management_System.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            _db.DeleteCourse(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                _db.DeleteCourse(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in Delete POST: " + ex.Message);
+                return View("Error");
+            }
         }
 
         // GET: /Course/SearchById?id=2
         public IActionResult SearchById(int id)
         {
-            var course = _db.GetCourseById(id);
-            if (course == null)
-                return View("Index", new List<Course>());
+            try
+            {
+                var course = _db.GetCourseById(id);
+                if (course == null)
+                    return View("Index", new List<Course>());
 
-            return View("Index", new List<Course> { course });
+                return View("Index", new List<Course> { course });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in SearchById: " + ex.Message);
+                return View("Error");
+            }
         }
 
         // SEARCH
         public IActionResult Search(string query)
         {
-            if (string.IsNullOrWhiteSpace(query))
-                return RedirectToAction(nameof(Index));
+            try
+            {
+                if (string.IsNullOrWhiteSpace(query))
+                    return RedirectToAction(nameof(Index));
 
-            var results = _db.SearchCourses(query);
-            return View("Index", results);
+                var results = _db.SearchCourses(query);
+                return View("Index", results);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in Search: " + ex.Message);
+                return View("Error");
+            }
         }
-
     }
 }

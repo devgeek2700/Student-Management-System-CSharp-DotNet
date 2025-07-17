@@ -15,144 +15,173 @@ namespace Student_Management_System.DB_CONNECT
             _connectionString = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
         }
 
-        // Create 
+        // CREATE
         public void AddDepartment(Department department)
         {
-            using SqlConnection connection = new SqlConnection(_connectionString);
-            using SqlCommand command = new SqlCommand(@"INSERT INTO Departments  
-        ( DepartmentName, HeadOfDepartment) 
-        VALUES 
-        (@DepartmentName, @HeadOfDepartment)", connection);
-            command.Parameters.AddWithValue("@DepartmentName", department.DepartmentName);
-            command.Parameters.AddWithValue("@HeadOfDepartment", department.HeadOfDepartment);
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_connectionString);
+                using SqlCommand command = new SqlCommand(@"INSERT INTO Departments  
+                    (DepartmentName, HeadOfDepartment) 
+                    VALUES (@DepartmentName, @HeadOfDepartment)", connection);
 
-            connection.Open();
-            command.ExecuteNonQuery();
+                command.Parameters.AddWithValue("@DepartmentName", department.DepartmentName);
+                command.Parameters.AddWithValue("@HeadOfDepartment", department.HeadOfDepartment);
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception
+                throw new Exception("Error while adding department: " + ex.Message, ex);
+            }
         }
 
-        // READ: Get all Department from the database
+        // READ ALL
         public List<Department> GetAllDepartments()
         {
             List<Department> departmentList = new List<Department>();
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            try
             {
-                using (SqlCommand command = new SqlCommand("SELECT * FROM Departments", connection))
+                using SqlConnection connection = new SqlConnection(_connectionString);
+                using SqlCommand command = new SqlCommand("SELECT * FROM Departments", connection);
+                command.CommandType = CommandType.Text;
+
+                connection.Open();
+                using SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
                 {
-                    command.CommandType = CommandType.Text;
-                    connection.Open();
-
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    Department department = new Department
                     {
-                        while (reader.Read())
-                        {
-                            Department department = new Department
-                            {
-                                DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
-                                DepartmentName = reader["DepartmentName"].ToString() ?? string.Empty,
-                                HeadOfDepartment = reader["HeadOfDepartment"].ToString() ?? string.Empty,
-                            };
-
-                            departmentList.Add(department);
-                        }
-                    }
+                        DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                        DepartmentName = reader["DepartmentName"].ToString() ?? string.Empty,
+                        HeadOfDepartment = reader["HeadOfDepartment"].ToString() ?? string.Empty,
+                    };
+                    departmentList.Add(department);
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while fetching departments: " + ex.Message, ex);
             }
 
             return departmentList;
         }
 
-        // READ: Get a student by ID
+        // READ BY ID
         public Department? GetDepartmentById(int id)
         {
-            using SqlConnection connection = new SqlConnection(_connectionString);
-            using SqlCommand command = new SqlCommand("SELECT * FROM Departments WHERE DepartmentID = @DepartmentID", connection);
-            command.Parameters.AddWithValue("@DepartmentID", id);
-            connection.Open();
-
-            using SqlDataReader reader = command.ExecuteReader();
-            if (reader.Read())
+            try
             {
-                return new Department
+                using SqlConnection connection = new SqlConnection(_connectionString);
+                using SqlCommand command = new SqlCommand("SELECT * FROM Departments WHERE DepartmentID = @DepartmentID", connection);
+                command.Parameters.AddWithValue("@DepartmentID", id);
+
+                connection.Open();
+                using SqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
                 {
-                    DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
-                    DepartmentName = reader["DepartmentName"].ToString() ?? string.Empty,
-                    HeadOfDepartment = reader["HeadOfDepartment"].ToString() ?? string.Empty,
-                };
+                    return new Department
+                    {
+                        DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                        DepartmentName = reader["DepartmentName"].ToString() ?? string.Empty,
+                        HeadOfDepartment = reader["HeadOfDepartment"].ToString() ?? string.Empty,
+                    };
+                }
             }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while retrieving department by ID: " + ex.Message, ex);
+            }
+
             return null;
         }
 
-
-        // UPDATE: Update a Department
+        // UPDATE
         public void UpdateDepartment(Department department)
         {
-            using SqlConnection connection = new SqlConnection(_connectionString);
-            using SqlCommand command = new SqlCommand(@"
-        UPDATE Departments 
-        SET DepartmentName = @DepartmentName, 
-            HeadOfDepartment = @HeadOfDepartment
-        WHERE DepartmentID = @DepartmentID", connection);
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_connectionString);
+                using SqlCommand command = new SqlCommand(@"
+                    UPDATE Departments 
+                    SET DepartmentName = @DepartmentName, 
+                        HeadOfDepartment = @HeadOfDepartment
+                    WHERE DepartmentID = @DepartmentID", connection);
 
-            command.CommandType = CommandType.Text;
+                command.CommandType = CommandType.Text;
+                command.Parameters.AddWithValue("@DepartmentID", department.DepartmentID);
+                command.Parameters.AddWithValue("@DepartmentName", department.DepartmentName);
+                command.Parameters.AddWithValue("@HeadOfDepartment", department.HeadOfDepartment);
 
-            command.Parameters.AddWithValue("@DepartmentID", department.DepartmentID);
-            command.Parameters.AddWithValue("@DepartmentName", department.DepartmentName);
-            command.Parameters.AddWithValue("@HeadOfDepartment", department.HeadOfDepartment);
-
-            connection.Open();
-            command.ExecuteNonQuery();
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while updating department: " + ex.Message, ex);
+            }
         }
 
-
-        // DELETE: Delete Department by id
-
+        // DELETE
         public void DeleteDepartment(int departmentId)
         {
-            using SqlConnection connection = new SqlConnection(_connectionString);
-            using SqlCommand command = new SqlCommand("DELETE FROM Departments WHERE DepartmentID = @DepartmentID", connection);
-            command.Parameters.AddWithValue("@DepartmentID", departmentId);
-            connection.Open();
-            command.ExecuteNonQuery();
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_connectionString);
+                using SqlCommand command = new SqlCommand("DELETE FROM Departments WHERE DepartmentID = @DepartmentID", connection);
+                command.Parameters.AddWithValue("@DepartmentID", departmentId);
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while deleting department: " + ex.Message, ex);
+            }
         }
 
-        // SERACH BAR
-
+        // SEARCH
         public List<Department> SearchDepartments(string query)
         {
             List<Department> result = new List<Department>();
 
-            using SqlConnection connection = new SqlConnection(_connectionString);
-            using SqlCommand command = new SqlCommand(@"
-        SELECT DISTINCT d.*
-        FROM Departments d
-        LEFT JOIN Courses c ON d.DepartmentID = c.DepartmentID
-        LEFT JOIN Teachers t ON d.DepartmentID = t.DepartmentID
-        WHERE 
-            d.DepartmentName LIKE @q OR
-            d.HeadOfDepartment LIKE @q OR
-            c.CourseName LIKE @q OR
-            (t.FirstName + ' ' + t.LastName) LIKE @q", connection);
-
-            command.Parameters.AddWithValue("@q", "%" + query + "%");
-            connection.Open();
-
-            using SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
+            try
             {
-                Department dept = new Department
+                using SqlConnection connection = new SqlConnection(_connectionString);
+                using SqlCommand command = new SqlCommand(@"
+                    SELECT DISTINCT d.*
+                    FROM Departments d
+                    LEFT JOIN Courses c ON d.DepartmentID = c.DepartmentID
+                    LEFT JOIN Teachers t ON d.DepartmentID = t.DepartmentID
+                    WHERE 
+                        d.DepartmentName LIKE @q OR
+                        d.HeadOfDepartment LIKE @q OR
+                        c.CourseName LIKE @q OR
+                        (t.FirstName + ' ' + t.LastName) LIKE @q", connection);
+
+                command.Parameters.AddWithValue("@q", "%" + query + "%");
+
+                connection.Open();
+                using SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
                 {
-                    DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
-                    DepartmentName = reader["DepartmentName"].ToString() ?? string.Empty,
-                    HeadOfDepartment = reader["HeadOfDepartment"].ToString() ?? string.Empty
-                };
-                result.Add(dept);
+                    Department dept = new Department
+                    {
+                        DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                        DepartmentName = reader["DepartmentName"].ToString() ?? string.Empty,
+                        HeadOfDepartment = reader["HeadOfDepartment"].ToString() ?? string.Empty
+                    };
+                    result.Add(dept);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while searching departments: " + ex.Message, ex);
             }
 
             return result;
         }
-
-
-
     }
 }
