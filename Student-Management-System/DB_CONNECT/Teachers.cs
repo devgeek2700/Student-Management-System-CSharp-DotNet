@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Student_Management_System.Models;
+using Student_Management_System.Models.Enums;
 using System.Data;
 
 namespace Student_Management_System.DB_CONNECT
@@ -27,7 +28,7 @@ namespace Student_Management_System.DB_CONNECT
 
                 command.Parameters.AddWithValue("@FirstName", teacher.FirstName);
                 command.Parameters.AddWithValue("@LastName", teacher.LastName);
-                command.Parameters.AddWithValue("@Gender", teacher.Gender ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Gender", teacher.Gender.ToString());
                 command.Parameters.AddWithValue("@Email", teacher.Email ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Phone", teacher.Phone ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Address", teacher.Address ?? (object)DBNull.Value);
@@ -63,7 +64,7 @@ namespace Student_Management_System.DB_CONNECT
                         TeacherID = Convert.ToInt32(reader["TeacherID"]),
                         FirstName = reader["FirstName"].ToString() ?? string.Empty,
                         LastName = reader["LastName"].ToString() ?? string.Empty,
-                        Gender = reader["Gender"].ToString(),
+                        Gender = Enum.TryParse(reader["Gender"].ToString(), out Gender g) ? g : Gender.Other,
                         Email = reader["Email"].ToString(),
                         Phone = reader["Phone"].ToString(),
                         Address = reader["Address"].ToString(),
@@ -99,7 +100,7 @@ namespace Student_Management_System.DB_CONNECT
                         TeacherID = Convert.ToInt32(reader["TeacherID"]),
                         FirstName = reader["FirstName"].ToString() ?? string.Empty,
                         LastName = reader["LastName"].ToString() ?? string.Empty,
-                        Gender = reader["Gender"].ToString(),
+                        Gender = Enum.TryParse(reader["Gender"].ToString(), out Gender g) ? g : Gender.Other,
                         Email = reader["Email"].ToString(),
                         Phone = reader["Phone"].ToString(),
                         Address = reader["Address"].ToString(),
@@ -134,7 +135,7 @@ namespace Student_Management_System.DB_CONNECT
                 command.Parameters.AddWithValue("@TeacherID", teacher.TeacherID);
                 command.Parameters.AddWithValue("@FirstName", teacher.FirstName);
                 command.Parameters.AddWithValue("@LastName", teacher.LastName);
-                command.Parameters.AddWithValue("@Gender", teacher.Gender ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Gender", teacher.Gender.ToString());  
                 command.Parameters.AddWithValue("@Email", teacher.Email ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Phone", teacher.Phone ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Address", teacher.Address ?? (object)DBNull.Value);

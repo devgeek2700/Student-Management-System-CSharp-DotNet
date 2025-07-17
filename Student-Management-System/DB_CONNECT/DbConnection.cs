@@ -1,7 +1,9 @@
-﻿using System.Data;
+﻿
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Student_Management_System.Models;
+using Student_Management_System.Models.Enums;
+using System.Data;
 
 namespace Student_Management_System.DB_CONNECT
 {
@@ -65,7 +67,7 @@ namespace Student_Management_System.DB_CONNECT
                         FirstName = reader["FirstName"].ToString() ?? "",
                         LastName = reader["LastName"].ToString() ?? "",
                         Email = reader["Email"].ToString() ?? "",
-                        Gender = reader["Gender"].ToString() ?? "",
+                        Gender = Enum.TryParse(reader["Gender"].ToString(), out Gender g) ? g : Gender.Other,
                         DOB = Convert.ToDateTime(reader["DOB"]),
                         Phone = reader["Phone"].ToString() ?? "",
                         Address = reader["Address"].ToString() ?? "",
@@ -101,7 +103,7 @@ namespace Student_Management_System.DB_CONNECT
                         FirstName = reader["FirstName"].ToString() ?? "",
                         LastName = reader["LastName"].ToString() ?? "",
                         Email = reader["Email"].ToString() ?? "",
-                        Gender = reader["Gender"].ToString() ?? "",
+                        Gender = Enum.TryParse(reader["Gender"].ToString(), out Gender g) ? g : Gender.Other,
                         DOB = Convert.ToDateTime(reader["DOB"]),
                         Phone = reader["Phone"].ToString() ?? "",
                         Address = reader["Address"].ToString() ?? "",
@@ -202,7 +204,7 @@ namespace Student_Management_System.DB_CONNECT
                         FirstName = reader["FirstName"].ToString() ?? "",
                         LastName = reader["LastName"].ToString() ?? "",
                         Email = reader["Email"].ToString() ?? "",
-                        Gender = reader["Gender"].ToString() ?? "",
+                        Gender = Enum.TryParse(reader["Gender"].ToString(), out Gender g) ? g : Gender.Other,
                         DOB = Convert.ToDateTime(reader["DOB"]),
                         Phone = reader["Phone"].ToString() ?? "",
                         Address = reader["Address"].ToString() ?? "",

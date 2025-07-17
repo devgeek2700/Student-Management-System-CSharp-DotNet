@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Student_Management_System.Models.Enums;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -16,8 +17,7 @@ namespace Student_Management_System.Models
         [StringLength(50)]
         public string LastName { get; set; } = string.Empty;
 
-        [StringLength(10)]
-        public string? Gender { get; set; }
+        public Gender Gender { get; set; }
 
         [EmailAddress]
         [StringLength(100)]

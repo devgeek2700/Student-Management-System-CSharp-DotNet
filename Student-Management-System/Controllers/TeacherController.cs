@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Student_Management_System.DB_CONNECT;
 using Student_Management_System.Models;
+using Student_Management_System.Models.Enums;
 using System;
 
 namespace Student_Management_System.Controllers
@@ -27,7 +28,7 @@ namespace Student_Management_System.Controllers
                 {
                     TeacherID = t.TeacherID,
                     Name = $"{t.FirstName} {t.LastName}",
-                    Gender = t.Gender,
+                    Gender = t.Gender.ToString(), 
                     Email = t.Email,
                     Phone = t.Phone,
                     DepartmentName = departments.FirstOrDefault(d => d.DepartmentID == t.DepartmentID)?.DepartmentName ?? "N/A",

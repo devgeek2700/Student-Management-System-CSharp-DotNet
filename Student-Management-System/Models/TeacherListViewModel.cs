@@ -12,8 +12,8 @@ namespace Student_Management_System.Models
         public string Email { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
 
-        public string DepartmentName { get; set; } = string.Empty; // <-- for display
+        public string DepartmentName { get; set; } = string.Empty; 
 
-        public List<string> CoursesIncharge { get; set; } = new(); // <-- for display
+        public List<string> CoursesIncharge { get; set; } = new(); 
     }
 }

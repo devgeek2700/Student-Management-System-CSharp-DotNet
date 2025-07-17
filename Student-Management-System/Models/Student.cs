@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Student_Management_System.Models.Enums;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -22,7 +23,9 @@ namespace Student_Management_System.Models
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        public string Gender { get; set; } = string.Empty;
+        [DisplayName("Gender")]
+        public Gender Gender { get; set; }
+
 
         [Required]
         [DataType(DataType.Date)]
