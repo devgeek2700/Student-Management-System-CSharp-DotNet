@@ -112,6 +112,10 @@ namespace Student_Management_System.DB_CONNECT
                     DepartmentID = @DepartmentID
                 WHERE TeacherID = @TeacherID", connection);
 
+
+
+
+
             command.Parameters.AddWithValue("@TeacherID", teacher.TeacherID);
             command.Parameters.AddWithValue("@FirstName", teacher.FirstName);
             command.Parameters.AddWithValue("@LastName", teacher.LastName);
