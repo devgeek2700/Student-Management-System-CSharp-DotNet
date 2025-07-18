@@ -1,17 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Student_Management_System.Models;
 using Student_Management_System.DB_CONNECT;
+using Student_Management_System.DB_CONNECT.Interfaces;
+using Student_Management_System.Models;
 using System;
+using System.Diagnostics;
 
 namespace Student_Management_System.Controllers
 {
     public class CourseController : Controller
     {
-        private readonly Courses _db;
+        private readonly ICourse _iCourse;
 
-        public CourseController(Courses db)
+        public CourseController(ICourse iCourse)
         {
-            _db = db;
+            _iCourse = iCourse;
         }
 
         // GET: /Course
@@ -19,13 +21,16 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var courses = _db.GetAllCourses();
+                var courses = _iCourse.GetAllCourses();
                 return View(courses);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error in Index: " + ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -34,7 +39,7 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var course = _db.GetCourseById(id);
+                var course = _iCourse.GetCourseById(id);
                 if (course == null)
                     return NotFound();
 
@@ -43,7 +48,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine("Error in Details: " + ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -52,13 +60,16 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                ViewBag.Departments = _db.GetAllDepartments();
+                ViewBag.Departments = _iCourse.GetAllDepartments();
                 return View();
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error in Create GET: " + ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -71,17 +82,20 @@ namespace Student_Management_System.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    _db.AddCourse(course);
+                    _iCourse.AddCourse(course);
                     return RedirectToAction(nameof(Index));
                 }
 
-                ViewBag.Departments = _db.GetAllDepartments();
+                ViewBag.Departments = _iCourse.GetAllDepartments();
                 return View(course);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error in Create POST: " + ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -90,17 +104,20 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var course = _db.GetCourseById(id);
+                var course = _iCourse.GetCourseById(id);
                 if (course == null)
                     return NotFound();
 
-                ViewBag.Departments = _db.GetAllDepartments();
+                ViewBag.Departments = _iCourse.GetAllDepartments();
                 return View(course);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error in Edit GET: " + ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -115,17 +132,20 @@ namespace Student_Management_System.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    _db.UpdateCourse(course);
+                    _iCourse.UpdateCourse(course);
                     return RedirectToAction(nameof(Index));
                 }
 
-                ViewBag.Departments = _db.GetAllDepartments();
+                ViewBag.Departments = _iCourse.GetAllDepartments();
                 return View(course);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error in Edit POST: " + ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -134,7 +154,7 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var course = _db.GetCourseById(id);
+                var course = _iCourse.GetCourseById(id);
                 if (course == null)
                     return NotFound();
 
@@ -143,7 +163,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine("Error in Delete GET: " + ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -154,13 +177,16 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                _db.DeleteCourse(id);
+                _iCourse.DeleteCourse(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error in Delete POST: " + ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -169,7 +195,7 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var course = _db.GetCourseById(id);
+                var course = _iCourse.GetCourseById(id);
                 if (course == null)
                     return View("Index", new List<Course>());
 
@@ -178,7 +204,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine("Error in SearchById: " + ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -190,13 +219,16 @@ namespace Student_Management_System.Controllers
                 if (string.IsNullOrWhiteSpace(query))
                     return RedirectToAction(nameof(Index));
 
-                var results = _db.SearchCourses(query);
+                var results = _iCourse.SearchCourses(query);
                 return View("Index", results);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error in Search: " + ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
     }

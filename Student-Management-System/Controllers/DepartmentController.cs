@@ -1,17 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Student_Management_System.Models;
 using Student_Management_System.DB_CONNECT;
+using Student_Management_System.DB_CONNECT.Interfaces;
+using Student_Management_System.Models;
 using System;
+using System.Diagnostics;
 
 namespace Student_Management_System.Controllers
 {
     public class DepartmentController : Controller
     {
-        private readonly Departments _db;
+        private readonly IDepartment _iDepartment;
 
-        public DepartmentController(Departments db)
+        public DepartmentController(IDepartment iDepartment)
         {
-            _db = db;
+            _iDepartment = iDepartment;
         }
 
         // GET: /Department
@@ -19,13 +21,16 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var departments = _db.GetAllDepartments();
+                var departments = _iDepartment.GetAllDepartments();
                 return View(departments);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in Index: {ex.Message}");
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -34,7 +39,7 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var department = _db.GetDepartmentById(id);
+                var department = _iDepartment.GetDepartmentById(id);
                 if (department == null)
                     return NotFound();
 
@@ -43,7 +48,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in Details: {ex.Message}");
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -62,7 +70,7 @@ namespace Student_Management_System.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    _db.AddDepartment(department);
+                    _iDepartment.AddDepartment(department);
                     return RedirectToAction(nameof(Index));
                 }
                 return View(department);
@@ -70,7 +78,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in Create POST: {ex.Message}");
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -79,7 +90,7 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var department = _db.GetDepartmentById(id);
+                var department = _iDepartment.GetDepartmentById(id);
                 if (department == null)
                     return NotFound();
 
@@ -88,7 +99,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in Edit GET: {ex.Message}");
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -103,7 +117,7 @@ namespace Student_Management_System.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    _db.UpdateDepartment(department);
+                    _iDepartment.UpdateDepartment(department);
                     return RedirectToAction(nameof(Index));
                 }
                 return View(department);
@@ -111,7 +125,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in Edit POST: {ex.Message}");
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -120,7 +137,7 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var department = _db.GetDepartmentById(id);
+                var department = _iDepartment.GetDepartmentById(id);
                 if (department == null)
                     return NotFound();
 
@@ -129,7 +146,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in Delete GET: {ex.Message}");
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -140,13 +160,16 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                _db.DeleteDepartment(id);
+                _iDepartment.DeleteDepartment(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in Delete POST: {ex.Message}");
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -155,7 +178,7 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var department = _db.GetDepartmentById(id);
+                var department = _iDepartment.GetDepartmentById(id);
                 if (department == null)
                     return View("Index", new List<Department>());
 
@@ -164,7 +187,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in SearchById: {ex.Message}");
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -173,13 +199,16 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var results = _db.SearchDepartments(query);
+                var results = _iDepartment.SearchDepartments(query);
                 return View("Index", results);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in Search: {ex.Message}");
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
     }

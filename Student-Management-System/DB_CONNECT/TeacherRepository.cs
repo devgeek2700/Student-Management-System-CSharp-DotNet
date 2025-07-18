@@ -1,16 +1,17 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Student_Management_System.DB_CONNECT.Interfaces;
 using Student_Management_System.Models;
 using Student_Management_System.Models.Enums;
 using System.Data;
 
 namespace Student_Management_System.DB_CONNECT
 {
-    public class Teachers
+    public class TeacherRepository : ITeacher
     {
         private readonly string _connectionString;
 
-        public Teachers(IConfiguration configuration)
+        public TeacherRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
         }
@@ -158,16 +159,30 @@ namespace Student_Management_System.DB_CONNECT
             try
             {
                 using SqlConnection connection = new SqlConnection(_connectionString);
-                using SqlCommand command = new SqlCommand("DELETE FROM Teachers WHERE TeacherID = @TeacherID", connection);
-                command.Parameters.AddWithValue("@TeacherID", teacherId);
                 connection.Open();
-                command.ExecuteNonQuery();
+
+                // Step 1: Delete from TeacherCourses
+                using (SqlCommand deleteCourses = new SqlCommand(
+                    "DELETE FROM TeacherCourses WHERE TeacherID = @TeacherID", connection))
+                {
+                    deleteCourses.Parameters.AddWithValue("@TeacherID", teacherId);
+                    deleteCourses.ExecuteNonQuery();
+                }
+
+                // Step 2: Delete from Teachers
+                using (SqlCommand deleteTeacher = new SqlCommand(
+                    "DELETE FROM Teachers WHERE TeacherID = @TeacherID", connection))
+                {
+                    deleteTeacher.Parameters.AddWithValue("@TeacherID", teacherId);
+                    deleteTeacher.ExecuteNonQuery();
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in DeleteTeacher: {ex.Message}");
             }
         }
+
 
         public List<Teacher> SearchTeachers(string query)
         {

@@ -4,14 +4,16 @@ using Microsoft.Extensions.Configuration;
 using Student_Management_System.Models;
 using Student_Management_System.Models.Enums;
 using System.Data;
+using Student_Management_System.DB_CONNECT.Interfaces;
+
 
 namespace Student_Management_System.DB_CONNECT
 {
-    public class DbConnection
+    public class StudentRepository : IStudent
     {
         private readonly string _connectionString;
 
-        public DbConnection(IConfiguration configuration)
+        public StudentRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
         }
@@ -160,10 +162,21 @@ namespace Student_Management_System.DB_CONNECT
             try
             {
                 using SqlConnection connection = new SqlConnection(_connectionString);
-                using SqlCommand command = new SqlCommand("DELETE FROM Students WHERE StudentID = @StudentID", connection);
-                command.Parameters.AddWithValue("@StudentID", studentId);
                 connection.Open();
-                command.ExecuteNonQuery();
+
+                // First, delete from StudentCourses
+                using (SqlCommand deleteCourses = new SqlCommand("DELETE FROM StudentCourses WHERE StudentID = @StudentID", connection))
+                {
+                    deleteCourses.Parameters.AddWithValue("@StudentID", studentId);
+                    deleteCourses.ExecuteNonQuery();
+                }
+
+                // Then, delete from Students
+                using (SqlCommand deleteStudent = new SqlCommand("DELETE FROM Students WHERE StudentID = @StudentID", connection))
+                {
+                    deleteStudent.Parameters.AddWithValue("@StudentID", studentId);
+                    deleteStudent.ExecuteNonQuery();
+                }
             }
             catch (Exception ex)
             {
@@ -172,9 +185,10 @@ namespace Student_Management_System.DB_CONNECT
             }
         }
 
-        public List<Student> SearchStudents(string query)
+
+        public List<StudentListViewModel> SearchStudents(string query)
         {
-            List<Student> result = new();
+            List<StudentListViewModel> result = new();
             try
             {
                 using SqlConnection connection = new SqlConnection(_connectionString);
@@ -198,7 +212,7 @@ namespace Student_Management_System.DB_CONNECT
                 using SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    result.Add(new Student
+                    result.Add(new StudentListViewModel
                     {
                         StudentID = Convert.ToInt32(reader["StudentID"]),
                         FirstName = reader["FirstName"].ToString() ?? "",
@@ -208,7 +222,7 @@ namespace Student_Management_System.DB_CONNECT
                         DOB = Convert.ToDateTime(reader["DOB"]),
                         Phone = reader["Phone"].ToString() ?? "",
                         Address = reader["Address"].ToString() ?? "",
-                        DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                        //DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
                         EnrollmentDate = Convert.ToDateTime(reader["EnrollmentDate"])
                     });
                 }

@@ -1,27 +1,29 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Student_Management_System.Models;
 using Student_Management_System.DB_CONNECT;
+using Student_Management_System.DB_CONNECT.Interfaces;
+using Student_Management_System.Models;
 using System;
+using System.Diagnostics;
 
 namespace Student_Management_System.Controllers
 {
     public class StudentController : Controller
     {
-        private readonly DbConnection _db;
+        private readonly IStudent _iStudent;
 
-        public StudentController(DbConnection db)
+        public StudentController(IStudent iStudent)
         {
-            _db = db;
+            _iStudent = iStudent;
         }
 
         public IActionResult Index()
         {
             try
             {
-                var students = _db.GetAllStudents();
-                var departments = _db.GetAllDepartments();
-                var studentCourses = _db.GetAllStudentCourses();
-                var courses = _db.GetAllCourses();
+                var students = _iStudent.GetAllStudents();
+                var departments = _iStudent.GetAllDepartments();
+                var studentCourses = _iStudent.GetAllStudentCourses();
+                var courses = _iStudent.GetAllCourses();
 
                 var studentList = students.Select(s => new StudentListViewModel
                 {
@@ -50,7 +52,10 @@ namespace Student_Management_System.Controllers
             {
                 // Log error (can use ILogger)
                 Console.WriteLine(ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -58,7 +63,7 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var student = _db.GetStudentById(id);
+                var student = _iStudent.GetStudentById(id);
                 if (student == null)
                     return NotFound();
 
@@ -67,7 +72,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -81,8 +89,8 @@ namespace Student_Management_System.Controllers
                     {
                         EnrollmentDate = DateTime.Now
                     },
-                    AllCourses = _db.GetAllCourses(),
-                    AllDepartments = _db.GetAllDepartments(),
+                    AllCourses = _iStudent.GetAllCourses(),
+                    AllDepartments = _iStudent.GetAllDepartments(),
                     SelectedCourseIds = new List<int>()
                 };
 
@@ -91,7 +99,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -103,24 +114,27 @@ namespace Student_Management_System.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    int newStudentId = _db.AddStudent(viewModel.Student);
+                    int newStudentId = _iStudent.AddStudent(viewModel.Student);
 
                     if (viewModel.SelectedCourseIds != null && viewModel.SelectedCourseIds.Any())
                     {
-                        _db.AddStudentCourses(newStudentId, viewModel.SelectedCourseIds);
+                        _iStudent.AddStudentCourses(newStudentId, viewModel.SelectedCourseIds);
                     }
 
                     return RedirectToAction(nameof(Index));
                 }
 
-                viewModel.AllCourses = _db.GetAllCourses();
-                viewModel.AllDepartments = _db.GetAllDepartments();
+                viewModel.AllCourses = _iStudent.GetAllCourses();
+                viewModel.AllDepartments = _iStudent.GetAllDepartments();
                 return View(viewModel);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -128,15 +142,15 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var student = _db.GetStudentById(id);
+                var student = _iStudent.GetStudentById(id);
                 if (student == null)
                     return NotFound();
 
                 var viewModel = new StudentViewModel
                 {
                     Student = student,
-                    AllCourses = _db.GetAllCourses(),
-                    AllDepartments = _db.GetAllDepartments(),
+                    AllCourses = _iStudent.GetAllCourses(),
+                    AllDepartments = _iStudent.GetAllDepartments(),
                     SelectedCourseIds = new List<int>()
                 };
 
@@ -145,7 +159,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -157,20 +174,23 @@ namespace Student_Management_System.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    _db.UpdateStudent(viewModel.Student);
-                    _db.UpdateStudentCourses(viewModel.Student.StudentID, viewModel.SelectedCourseIds ?? new List<int>());
+                    _iStudent.UpdateStudent(viewModel.Student);
+                    _iStudent.UpdateStudentCourses(viewModel.Student.StudentID, viewModel.SelectedCourseIds ?? new List<int>());
 
                     return RedirectToAction(nameof(Index));
                 }
 
-                viewModel.AllCourses = _db.GetAllCourses();
-                viewModel.AllDepartments = _db.GetAllDepartments();
+                viewModel.AllCourses = _iStudent.GetAllCourses();
+                viewModel.AllDepartments = _iStudent.GetAllDepartments();
                 return View(viewModel);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -178,7 +198,7 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var student = _db.GetStudentById(id);
+                var student = _iStudent.GetStudentById(id);
                 if (student == null)
                     return NotFound();
 
@@ -187,7 +207,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -197,13 +220,16 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                _db.DeleteStudent(id);
+                _iStudent.DeleteStudent(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -211,7 +237,7 @@ namespace Student_Management_System.Controllers
         {
             try
             {
-                var student = _db.GetStudentById(id);
+                var student = _iStudent.GetStudentById(id);
                 if (student == null)
                     return View("Index", new List<Student>());
 
@@ -220,7 +246,10 @@ namespace Student_Management_System.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
 
@@ -231,13 +260,16 @@ namespace Student_Management_System.Controllers
                 if (string.IsNullOrWhiteSpace(query))
                     return RedirectToAction("Index");
 
-                var results = _db.SearchStudents(query);
+                var results = _iStudent.SearchStudents(query);
                 return View("Index", results);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return View("Error");
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+                });
             }
         }
     }

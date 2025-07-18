@@ -1,16 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Student_Management_System.DB_CONNECT.Interfaces;
 using Student_Management_System.Models;
 using System.Data;
 
 namespace Student_Management_System.DB_CONNECT
 {
-    public class Departments
+    public class DepartmentRepository : IDepartment
     {
         private readonly string _connectionString;
 
-        public Departments(IConfiguration configuration)
+        public DepartmentRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
         }
