@@ -222,7 +222,7 @@ namespace Student_Management_System.DB_CONNECT
                         DOB = Convert.ToDateTime(reader["DOB"]),
                         Phone = reader["Phone"].ToString() ?? "",
                         Address = reader["Address"].ToString() ?? "",
-                        //DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                        DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
                         EnrollmentDate = Convert.ToDateTime(reader["EnrollmentDate"])
                     });
                 }

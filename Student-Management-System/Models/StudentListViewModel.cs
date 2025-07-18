@@ -20,6 +20,8 @@ namespace Student_Management_System.Models
         public string DepartmentName { get; set; } = string.Empty;
         public DateTime EnrollmentDate { get; set; }
 
+        public int DepartmentID { get; set; }
+
         public List<string> CoursesTaken { get; set; } = new();
     }
 }

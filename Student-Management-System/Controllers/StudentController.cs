@@ -260,8 +260,30 @@ namespace Student_Management_System.Controllers
                 if (string.IsNullOrWhiteSpace(query))
                     return RedirectToAction("Index");
 
-                var results = _iStudent.SearchStudents(query);
-                return View("Index", results);
+                var students = _iStudent.SearchStudents(query); // return List<Student>
+                var departments = _iStudent.GetAllDepartments();
+                var studentCourses = _iStudent.GetAllStudentCourses();
+                var courses = _iStudent.GetAllCourses();
+
+                var studentList = students.Select(s => new StudentListViewModel
+                {
+                    StudentID = s.StudentID,
+                    FirstName = s.FirstName,
+                    LastName = s.LastName,
+                    Gender = s.Gender,
+                    DOB = s.DOB,
+                    Email = s.Email,
+                    Phone = s.Phone,
+                    Address = s.Address,
+                    DepartmentName = departments.FirstOrDefault(d => d.DepartmentID == s.DepartmentID)?.DepartmentName ?? "N/A",
+                    EnrollmentDate = s.EnrollmentDate,
+                    CoursesTaken = studentCourses
+                        .Where(sc => sc.StudentID == s.StudentID)
+                        .Join(courses, sc => sc.CourseID, c => c.CourseID, (sc, c) => c.CourseName)
+                        .ToList()
+                }).ToList();
+
+                return View("Index", studentList);
             }
             catch (Exception ex)
             {
@@ -272,5 +294,6 @@ namespace Student_Management_System.Controllers
                 });
             }
         }
+
     }
 }

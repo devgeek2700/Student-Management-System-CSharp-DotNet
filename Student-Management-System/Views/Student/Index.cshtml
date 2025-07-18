@@ -22,7 +22,6 @@
     <table class="table table-bordered table-striped">
         <thead class="table-light">
             <tr>
-                <th>View</th>
                 <th>Student Number</th>
                 <th>First Name</th>
                 <th>Last Name</th>
@@ -40,11 +39,11 @@
         <tbody>
             @if (Model.Any())
             {
-                foreach (var student in Model)
+                for (int i = 0; i < Model.Count; i++)
                 {
+                    var student = Model[i];
                     <tr>
-                        <td><a asp-controller="Student" asp-action="Details" asp-route-id="@student.StudentID">View</a></td>
-                        <td>@student.StudentID</td>
+                        <td>@(i + 1)</td> <!-- Serial number -->
                         <td>@student.FirstName</td>
                         <td>@student.LastName</td>
                         <td>@student.Gender</td>
@@ -52,8 +51,8 @@
                         <td>@student.Email</td>
                         <td>@student.Phone</td>
                         <td>@student.Address</td>
-                      <td>@student.DepartmentName</td>
-<td>@string.Join(", ", student.CoursesTaken)</td>
+                        <td>@student.DepartmentName</td>
+                        <td>@string.Join(", ", student.CoursesTaken)</td>
                         <td>@student.EnrollmentDate.ToShortDateString()</td>
                         <td>
                             <a class="btn btn-sm btn-warning" asp-controller="Student" asp-action="Edit" asp-route-id="@student.StudentID">Edit</a>
@@ -68,6 +67,7 @@
                     <td colspan="12" class="text-center text-muted">No students found.</td>
                 </tr>
             }
+
         </tbody>
     </table>
 </div>
