@@ -17,7 +17,7 @@ A robust, modular web application for managing students, teachers, courses, and 
 - **MVC Pattern**: Clean separation of concerns for scalability and maintainability.
 - **Repository Pattern**: Decoupled data access via interfaces for flexibility.
 - **UI**: ASP.NET MVC with Razor Views for dynamic, server-rendered UI.
-- **ORM**: Entity Framework and/or ADO.NET for efficient database communication.
+- **ORM**: ADO.NET for efficient database communication.
 - **Dependency Injection**: Interface-based repository injection.
 
 ---
