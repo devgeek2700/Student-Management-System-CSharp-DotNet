@@ -22,7 +22,6 @@ A robust, modular web application for managing students, teachers, courses, and 
 
 ---
 
-## 🖥️ Screenshots
 
 ## 💻 Screenshots
 
